@@ -31,39 +31,34 @@ fun main(args: Array<String>) {
 
     argEnvParser.parse()
 
-    try {
-        val localAddress = InetSocketAddress(0)
-        val gatewayAddress = InetSocketAddress(knxGatewayAddress.toString(), knxGatewayPort.toInt())
+    val localAddress = InetSocketAddress(0)
+    val gatewayAddress = InetSocketAddress(knxGatewayAddress.toString(), knxGatewayPort.toInt())
 
-        KNXNetworkLinkIP.newTunnelingLink(
-            localAddress,
-            gatewayAddress,
-            true,
-            TPSettings.TP1
-        ).use { knxLink ->
-            ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
-                TimeBasedFunctionalityController(
-                    processCommunicator,
-                    GroupAddress.fromString(allJalousieControlGroupAddress.toString()),
-                    GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddress.toString()),
-                    GroupAddress.fromString(dayNightModeControlGroupAddress.toString()),
-                ).let { timeBasedJalousieController ->
-                    while (knxLink.isOpen) {
-                        timeBasedJalousieController.check(
-                            Clock.systemDefaultZone(),
-                            timeZone.toString(),
-                            locationLat.toDouble(),
-                            locationLon.toDouble(),
-                            offsetSunrise,
-                            offsetSunset
-                        )
-                        Thread.sleep(1000)
-                    }
+    KNXNetworkLinkIP.newTunnelingLink(
+        localAddress,
+        gatewayAddress,
+        true,
+        TPSettings.TP1
+    ).use { knxLink ->
+        ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
+            TimeBasedFunctionalityController(
+                processCommunicator,
+                GroupAddress.fromString(allJalousieControlGroupAddress.toString()),
+                GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddress.toString()),
+                GroupAddress.fromString(dayNightModeControlGroupAddress.toString()),
+            ).let { timeBasedJalousieController ->
+                while (knxLink.isOpen) {
+                    timeBasedJalousieController.check(
+                        Clock.systemDefaultZone(),
+                        timeZone.toString(),
+                        locationLat.toDouble(),
+                        locationLon.toDouble(),
+                        offsetSunrise,
+                        offsetSunset
+                    )
+                    Thread.sleep(1000)
                 }
             }
         }
-    } catch (e: Exception) {
-        System.err.println(e)
-        exitProcess(1)
     }
 }
