@@ -1,11 +1,20 @@
+import domain.OnSunriseMoveJalousieUp
+import infrastructure.housecontrol.DayNightModeController
+import domain.OnSunriseTurnDayModeOn
+import domain.OnSunsetMoveJalousieDown
+import domain.OnSunsetTurnNightModeOn
+import domain.clock.SunriseEvent
+import domain.clock.SunsetEvent
+import domain.clock.TimeBasedEventEmitter
 import infrastructure.ArgOrEnvParser
+import infrastructure.eventbus.SynchronousEventBus
+import infrastructure.housecontrol.JalousieController
 import knx.GroupAddress
 import tuwien.auto.calimero.link.KNXNetworkLinkIP
 import tuwien.auto.calimero.link.medium.TPSettings
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl
 import java.net.InetSocketAddress
 import java.time.Clock
-import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     val argEnvParser = ArgOrEnvParser("house-knx-automation", args, System.getenv())
@@ -34,29 +43,43 @@ fun main(args: Array<String>) {
     val localAddress = InetSocketAddress(0)
     val gatewayAddress = InetSocketAddress(knxGatewayAddress.toString(), knxGatewayPort.toInt())
 
-    KNXNetworkLinkIP.newTunnelingLink(
-        localAddress,
-        gatewayAddress,
-        true,
-        TPSettings.TP1
-    ).use { knxLink ->
-        ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
-            TimeBasedFunctionalityController(
-                processCommunicator,
-                GroupAddress.fromString(allJalousieControlGroupAddress.toString()),
-                GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddress.toString()),
-                GroupAddress.fromString(dayNightModeControlGroupAddress.toString()),
-            ).let { timeBasedJalousieController ->
-                while (knxLink.isOpen) {
-                    timeBasedJalousieController.check(
-                        Clock.systemDefaultZone(),
-                        timeZone.toString(),
-                        locationLat.toDouble(),
-                        locationLon.toDouble(),
-                        offsetSunrise,
-                        offsetSunset
-                    )
-                    Thread.sleep(1000)
+    SynchronousEventBus().let { eventBus ->
+
+        KNXNetworkLinkIP.newTunnelingLink(
+            localAddress,
+            gatewayAddress,
+            true,
+            TPSettings.TP1
+        ).use { knxLink ->
+            ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
+                val dayNightModeController = DayNightModeController(
+                    processCommunicator,
+                    GroupAddress.fromString(dayNightModeControlGroupAddress.toString())
+                )
+                val jalousieController = JalousieController(
+                    processCommunicator,
+                    GroupAddress.fromString(allJalousieControlGroupAddress.toString()),
+                    GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddress.toString())
+                )
+
+                eventBus.listen(SunriseEvent::class, OnSunriseTurnDayModeOn(dayNightModeController))
+                eventBus.listen(SunriseEvent::class, OnSunriseMoveJalousieUp(jalousieController))
+                eventBus.listen(SunsetEvent::class, OnSunsetTurnNightModeOn(dayNightModeController))
+                eventBus.listen(SunsetEvent::class, OnSunsetMoveJalousieDown(jalousieController))
+
+                TimeBasedEventEmitter(
+                    eventBus,
+                    Clock.systemDefaultZone(),
+                    timeZone.toString(),
+                    locationLat.toDouble(),
+                    locationLon.toDouble(),
+                    offsetSunrise,
+                    offsetSunset
+                ).let { clock ->
+                    clock.tick()
+                    while (knxLink.isOpen) {
+                        Thread.sleep(1000)
+                    }
                 }
             }
         }
