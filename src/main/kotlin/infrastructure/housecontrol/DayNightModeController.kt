@@ -1,6 +1,6 @@
 package infrastructure.housecontrol
 
-import knx.GroupAddress
+import infrastructure.knx.GroupAddress
 import tuwien.auto.calimero.process.ProcessCommunicator
 
 class DayNightModeController(

@@ -1,4 +1,4 @@
-package knx
+package infrastructure.knx
 
 class TwoByteFloatValue(val type: DPT, val value: Double) {
     override fun toString(): String {

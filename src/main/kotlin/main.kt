@@ -9,7 +9,7 @@ import domain.clock.TimeBasedEventEmitter
 import infrastructure.ArgOrEnvParser
 import infrastructure.eventbus.SynchronousEventBus
 import infrastructure.housecontrol.JalousieController
-import knx.GroupAddress
+import infrastructure.knx.GroupAddress
 import tuwien.auto.calimero.link.KNXNetworkLinkIP
 import tuwien.auto.calimero.link.medium.TPSettings
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl

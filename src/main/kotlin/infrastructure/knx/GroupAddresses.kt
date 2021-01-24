@@ -1,4 +1,4 @@
-package knx
+package infrastructure.knx
 
 class GroupAddresses : Collection<GroupAddress> {
     private var addresses: Collection<GroupAddress>;

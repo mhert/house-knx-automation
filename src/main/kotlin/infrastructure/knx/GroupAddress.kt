@@ -1,4 +1,4 @@
-package knx
+package infrastructure.knx
 
 /**
  * 3-level group address

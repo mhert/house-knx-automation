@@ -1,4 +1,4 @@
-package knx
+package infrastructure.knx
 
 enum class DPT(val id: String, val unit: String) {
     TEMPERATURE("9.001", "°C"),
