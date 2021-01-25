@@ -7,7 +7,7 @@ class DayNightModeController(
     private val processCommunicator: ProcessCommunicator,
     private val dayNightModeControlGroupAddress: GroupAddress
 ) {
-    enum class DayNight(public val value: Boolean) {
+    private enum class DayNight(public val value: Boolean) {
         DAY(true),
         NIGHT(false),
     }

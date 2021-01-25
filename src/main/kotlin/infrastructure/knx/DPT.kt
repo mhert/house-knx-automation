@@ -3,7 +3,8 @@ package infrastructure.knx
 enum class DPT(val id: String, val unit: String) {
     TEMPERATURE("9.001", "°C"),
     INTENSITY_OF_LIGHT("9.004", "lx"),
-    WIND_SPEED("9.005", "m/s");
+    WIND_SPEED("9.005", "m/s"),
+    HVAC_MODE("20.102", "HVAC_MODE");
 
     companion object {
         fun fromTypeId(typeId: String): DPT {

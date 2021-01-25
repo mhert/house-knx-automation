@@ -1,13 +1,9 @@
-import domain.OnSunriseMoveJalousieUp
+import domain.*
+import domain.clock.*
 import infrastructure.housecontrol.DayNightModeController
-import domain.OnSunriseTurnDayModeOn
-import domain.OnSunsetMoveJalousieDown
-import domain.OnSunsetTurnNightModeOn
-import domain.clock.SunriseEvent
-import domain.clock.SunsetEvent
-import domain.clock.TimeBasedEventEmitter
 import infrastructure.ArgOrEnvParser
 import infrastructure.eventbus.SynchronousEventBus
+import infrastructure.housecontrol.HeatingModeController
 import infrastructure.housecontrol.JalousieController
 import infrastructure.knx.GroupAddress
 import tuwien.auto.calimero.link.KNXNetworkLinkIP
@@ -15,6 +11,8 @@ import tuwien.auto.calimero.link.medium.TPSettings
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl
 import java.net.InetSocketAddress
 import java.time.Clock
+import java.time.LocalTime
+import java.time.ZoneId
 
 fun main(args: Array<String>) {
     val argEnvParser = ArgOrEnvParser("house-knx-automation", args, System.getenv())
@@ -25,10 +23,13 @@ fun main(args: Array<String>) {
     val timeZone = argEnvParser.requiredString("timeZone", "TIME_ZONE")
     val locationLat = argEnvParser.requiredDouble("locationLat", "LOCATION_LAT")
     val locationLon = argEnvParser.requiredDouble("locationLon", "LOCATION_LON")
+    val morningTime = argEnvParser.requiredString("morningTime", "MORNING_TIME")
+    val eveningTime = argEnvParser.requiredString("eveningTime", "EVENING_TIME")
 
     val allJalousieControlGroupAddress = argEnvParser.requiredString("allJalousieControlGroupAddress", "ALL_JALOUSIE_CONTROL_GROUP_ADDRESS")
     val allJalousieExceptBedroomsControlGroupAddress = argEnvParser.requiredString("allJalousieExceptBedroomsControlGroupAddress", "ALL_JALOUSIE_EXCEPT_BEDROOMS_CONTROL_GROUP_ADDRESS")
     val dayNightModeControlGroupAddress = argEnvParser.requiredString("dayNightModeControlGroupAddress", "DAY_NIGHT_MODE_CONTROL_GROUP_ADDRESS")
+    val heatingModeControlGroupAddress = argEnvParser.requiredString("heatingModeControlGroupAddress", "HEATING_MODE_CONTROL_GROUP_ADDRESS")
 
     val offsetBeforeSunriseInSeconds = argEnvParser.optionalLong("offsetBeforeSunriseInSeconds", "OFFSET_BEFORE_SUNRISE_IN_SECONDS", 0)
     val offsetAfterSunriseInSeconds = argEnvParser.optionalLong("offsetAfterSunriseInSeconds", "OFFSET_AFTER_SUNRISE_IN_SECONDS", 0)
@@ -61,25 +62,40 @@ fun main(args: Array<String>) {
                     GroupAddress.fromString(allJalousieControlGroupAddress.toString()),
                     GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddress.toString())
                 )
+                val heatingModeController = HeatingModeController(
+                    processCommunicator,
+                    GroupAddress.fromString(heatingModeControlGroupAddress.toString())
+                )
 
                 eventBus.listen(SunriseEvent::class, OnSunriseTurnDayModeOn(dayNightModeController))
                 eventBus.listen(SunriseEvent::class, OnSunriseMoveJalousieUp(jalousieController))
                 eventBus.listen(SunsetEvent::class, OnSunsetTurnNightModeOn(dayNightModeController))
                 eventBus.listen(SunsetEvent::class, OnSunsetMoveJalousieDown(jalousieController))
+                eventBus.listen(ReachedMorningEvent::class, InTheMorningTurnOnHeatingComfortMode(heatingModeController))
+                eventBus.listen(ReachedEveningEvent::class, InTheEveningTurnOnHeatingNightMode(heatingModeController))
 
-                TimeBasedEventEmitter(
+                val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
                     eventBus,
                     Clock.systemDefaultZone(),
-                    timeZone.toString(),
+                    ZoneId.of(timeZone.toString()),
                     locationLat.toDouble(),
                     locationLon.toDouble(),
                     offsetSunrise,
                     offsetSunset
-                ).let { clock ->
-                    clock.tick()
-                    while (knxLink.isOpen) {
-                        Thread.sleep(1000)
-                    }
+                )
+
+                val morningEveningEventEmitter = MorningEveningEventEmitter(
+                    eventBus,
+                    Clock.systemDefaultZone(),
+                    ZoneId.of(timeZone.toString()),
+                    LocalTime.parse(morningTime.toString()),
+                    LocalTime.parse(eveningTime.toString()),
+                )
+
+                while (knxLink.isOpen) {
+                    sunriseSunsetEventEmitter.tick()
+                    morningEveningEventEmitter.tick()
+                    Thread.sleep(1000)
                 }
             }
         }

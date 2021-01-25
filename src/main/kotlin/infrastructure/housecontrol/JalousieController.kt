@@ -8,7 +8,7 @@ class JalousieController(
     private val allJalousieControlGroupAddress: GroupAddress,
     private val allJalousieExceptBedroomsControlGroupAddress: GroupAddress
 ) {
-    enum class JalousieControl(public val value: Boolean) {
+    private enum class JalousieControl(public val value: Boolean) {
         UP(false),
         DOWN(true),
     }
