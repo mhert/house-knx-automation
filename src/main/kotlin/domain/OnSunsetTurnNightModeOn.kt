@@ -2,10 +2,10 @@ package domain
 
 import domain.clock.SunsetEvent
 import infrastructure.eventbus.ObjectBasedListener
-import infrastructure.housecontrol.DayNightModeController
+import infrastructure.housecontrol.CanControlDayNightMode
 
 class OnSunsetTurnNightModeOn(
-    private val dayNightModeController: DayNightModeController
+    private val dayNightModeController: CanControlDayNightMode
 ) : ObjectBasedListener<SunsetEvent> {
 
     override fun invoke(event: SunsetEvent) {

@@ -24,6 +24,10 @@ class ArgOrEnvParser(
         fun toLong(): Long
     }
 
+    interface CastableToBoolean {
+        fun toBoolean(): Boolean
+    }
+
     private val parser = ArgParser(applicationName)
 
     fun parse() = parser.parse(args)
@@ -79,6 +83,19 @@ class ArgOrEnvParser(
         return object : CastableToLong {
             override fun toLong(): Long {
                 return ((env[envName]?.toInt() ?: value) ?: default).toLong()
+            }
+        }
+    }
+
+    fun optionalBoolean(argName: String, envName: String, default: Boolean): CastableToBoolean {
+        val value by parser.option(
+            ArgType.Boolean,
+            argName,
+        )
+
+        return object : CastableToBoolean {
+            override fun toBoolean(): Boolean {
+                return ((env[envName]?.toBoolean() ?: value) ?: default)
             }
         }
     }

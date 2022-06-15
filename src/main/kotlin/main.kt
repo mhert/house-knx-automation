@@ -1,10 +1,17 @@
 import domain.*
 import domain.clock.*
-import infrastructure.housecontrol.DayNightModeController
 import infrastructure.ArgOrEnvParser
+import infrastructure.eventbus.EventBus
 import infrastructure.eventbus.SynchronousEventBus
-import infrastructure.housecontrol.HeatingModeController
-import infrastructure.housecontrol.JalousieController
+import infrastructure.housecontrol.CanControlDayNightMode
+import infrastructure.housecontrol.CanControlHeatingMode
+import infrastructure.housecontrol.CanControlJalousie
+import infrastructure.housecontrol.dryrun.DryRunBasedDayNightModeController
+import infrastructure.housecontrol.dryrun.DryRunBasedHeatingModeController
+import infrastructure.housecontrol.dryrun.DryRunBasedJalousieController
+import infrastructure.housecontrol.knx.KnxBasedDayNightModeController
+import infrastructure.housecontrol.knx.KnxBasedHeatingModeController
+import infrastructure.housecontrol.knx.KnxBasedJalousieController
 import infrastructure.knx.GroupAddress
 import tuwien.auto.calimero.link.KNXNetworkLinkIP
 import tuwien.auto.calimero.link.medium.TPSettings
@@ -16,6 +23,8 @@ import java.time.ZoneId
 
 fun main(args: Array<String>) {
     val argEnvParser = ArgOrEnvParser("house-knx-automation", args, System.getenv())
+
+    val dryRun = argEnvParser.optionalBoolean("dryRun", "DRY_RUN", false)
 
     val knxGatewayAddress = argEnvParser.requiredString("knxGatewayAddress", "KNX_GATEWAY_ADDRESS")
     val knxGatewayPort = argEnvParser.requiredInt("knxGatewayPort", "KNX_GATEWAY_PORT")
@@ -45,59 +54,86 @@ fun main(args: Array<String>) {
     val gatewayAddress = InetSocketAddress(knxGatewayAddress.toString(), knxGatewayPort.toInt())
 
     SynchronousEventBus().let { eventBus ->
+        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
+            eventBus,
+            Clock.systemDefaultZone(),
+            ZoneId.of(timeZone.toString()),
+            locationLat.toDouble(),
+            locationLon.toDouble(),
+            offsetSunrise,
+            offsetSunset
+        )
 
-        KNXNetworkLinkIP.newTunnelingLink(
-            localAddress,
-            gatewayAddress,
-            true,
-            TPSettings.TP1
-        ).use { knxLink ->
-            ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
-                val dayNightModeController = DayNightModeController(
-                    processCommunicator,
-                    GroupAddress.fromString(dayNightModeControlGroupAddress.toString())
-                )
-                val jalousieController = JalousieController(
-                    processCommunicator,
-                    GroupAddress.fromString(allJalousieControlGroupAddress.toString()),
-                    GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddress.toString())
-                )
-                val heatingModeController = HeatingModeController(
-                    processCommunicator,
-                    GroupAddress.fromString(heatingModeControlGroupAddress.toString())
-                )
+        val morningEveningEventEmitter = MorningEveningEventEmitter(
+            eventBus,
+            Clock.systemDefaultZone(),
+            ZoneId.of(timeZone.toString()),
+            LocalTime.parse(morningTime.toString()),
+            LocalTime.parse(eveningTime.toString()),
+        )
 
-                eventBus.listen(SunriseEvent::class, OnSunriseTurnDayModeOn(dayNightModeController))
-                eventBus.listen(SunriseEvent::class, OnSunriseMoveJalousieUp(jalousieController))
-                eventBus.listen(SunsetEvent::class, OnSunsetTurnNightModeOn(dayNightModeController))
-                eventBus.listen(SunsetEvent::class, OnSunsetMoveJalousieDown(jalousieController))
-                eventBus.listen(ReachedMorningEvent::class, InTheMorningTurnOnHeatingComfortMode(heatingModeController))
-                eventBus.listen(ReachedEveningEvent::class, InTheEveningTurnOnHeatingNightMode(heatingModeController))
+        if (!dryRun.toBoolean()) {
+            KNXNetworkLinkIP.newTunnelingLink(
+                localAddress,
+                gatewayAddress,
+                true,
+                TPSettings.TP1
+            ).use { knxLink ->
+                ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
+                    val dayNightModeController = KnxBasedDayNightModeController(
+                        processCommunicator,
+                        GroupAddress.fromString(dayNightModeControlGroupAddress.toString())
+                    )
 
-                val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-                    eventBus,
-                    Clock.systemDefaultZone(),
-                    ZoneId.of(timeZone.toString()),
-                    locationLat.toDouble(),
-                    locationLon.toDouble(),
-                    offsetSunrise,
-                    offsetSunset
-                )
+                    val heatingModeController =
+                        KnxBasedHeatingModeController(
+                            processCommunicator,
+                            GroupAddress.fromString(heatingModeControlGroupAddress.toString())
+                        )
 
-                val morningEveningEventEmitter = MorningEveningEventEmitter(
-                    eventBus,
-                    Clock.systemDefaultZone(),
-                    ZoneId.of(timeZone.toString()),
-                    LocalTime.parse(morningTime.toString()),
-                    LocalTime.parse(eveningTime.toString()),
-                )
+                    val jalousieController =
+                        KnxBasedJalousieController(
+                            processCommunicator,
+                            GroupAddress.fromString(allJalousieControlGroupAddress.toString()),
+                            GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddress.toString())
+                        )
 
-                while (knxLink.isOpen) {
-                    sunriseSunsetEventEmitter.tick()
-                    morningEveningEventEmitter.tick()
-                    Thread.sleep(1000)
+                    configureEventBus(eventBus, dayNightModeController, heatingModeController, jalousieController)
+
+                    while (knxLink.isOpen) eventBusTick(sunriseSunsetEventEmitter, morningEveningEventEmitter)
                 }
             }
         }
+        else {
+            val dayNightModeController = DryRunBasedDayNightModeController()
+            val heatingModeController = DryRunBasedHeatingModeController()
+            val jalousieController = DryRunBasedJalousieController()
+
+            configureEventBus(eventBus, dayNightModeController, heatingModeController, jalousieController)
+
+            while (true) eventBusTick(sunriseSunsetEventEmitter, morningEveningEventEmitter)
+        }
     }
+}
+
+fun configureEventBus(
+    eventBus: EventBus,
+    dayNightModeController: CanControlDayNightMode,
+    heatingModeController: CanControlHeatingMode,
+    jalousieController: CanControlJalousie,
+) {
+    eventBus.listen(SunriseEvent::class, OnSunriseTurnDayModeOn(dayNightModeController))
+    eventBus.listen(SunriseEvent::class, OnSunriseMoveJalousieUp(jalousieController))
+    eventBus.listen(SunsetEvent::class, OnSunsetTurnNightModeOn(dayNightModeController))
+    eventBus.listen(SunsetEvent::class, OnSunsetMoveJalousieDown(jalousieController))
+    eventBus.listen(ReachedMorningEvent::class, InTheMorningTurnOnHeatingComfortMode(heatingModeController))
+    eventBus.listen(ReachedEveningEvent::class, InTheEveningTurnOnHeatingNightMode(heatingModeController))
+}
+fun eventBusTick(
+    sunriseSunsetEventEmitter: SunriseSunsetEventEmitter,
+    morningEveningEventEmitter: MorningEveningEventEmitter,
+) {
+    sunriseSunsetEventEmitter.tick()
+    morningEveningEventEmitter.tick()
+    Thread.sleep(1000)
 }

@@ -2,11 +2,10 @@ package domain
 
 import domain.clock.SunriseEvent
 import infrastructure.eventbus.ObjectBasedListener
-import infrastructure.housecontrol.DayNightModeController
-import infrastructure.housecontrol.JalousieController
+import infrastructure.housecontrol.CanControlJalousie
 
 class OnSunriseMoveJalousieUp(
-    private val jalousieController: JalousieController
+    private val jalousieController: CanControlJalousie
 ) : ObjectBasedListener<SunriseEvent> {
 
     override fun invoke(event: SunriseEvent) {
