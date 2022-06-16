@@ -12,6 +12,10 @@ class ArgOrEnvParser(
         override fun toString(): String
     }
 
+    interface CastableToOptionalString {
+        fun toOptionalString(): String?
+    }
+
     interface CastableToInt {
         fun toInt(): Int
     }
@@ -83,6 +87,19 @@ class ArgOrEnvParser(
         return object : CastableToLong {
             override fun toLong(): Long {
                 return ((env[envName]?.toInt() ?: value) ?: default).toLong()
+            }
+        }
+    }
+
+    fun optionalString(argName: String, envName: String, default: String?): CastableToOptionalString {
+        val value by parser.option(
+            ArgType.String,
+            argName,
+        )
+
+        return object : CastableToOptionalString {
+            override fun toOptionalString(): String? {
+                return (env[envName] ?: value) ?: default
             }
         }
     }

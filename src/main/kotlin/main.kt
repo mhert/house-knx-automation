@@ -24,42 +24,56 @@ import java.time.ZoneId
 fun main(args: Array<String>) {
     val argEnvParser = ArgOrEnvParser("house-knx-automation", args, System.getenv())
 
-    val dryRun = argEnvParser.optionalBoolean("dryRun", "DRY_RUN", false)
+    val dryRunConfig = argEnvParser.optionalBoolean("dryRun", "DRY_RUN", false)
 
-    val knxGatewayAddress = argEnvParser.requiredString("knxGatewayAddress", "KNX_GATEWAY_ADDRESS")
-    val knxGatewayPort = argEnvParser.requiredInt("knxGatewayPort", "KNX_GATEWAY_PORT")
+    val knxGatewayAddressConfig = argEnvParser.requiredString("knxGatewayAddress", "KNX_GATEWAY_ADDRESS")
+    val knxGatewayPortConfig = argEnvParser.requiredInt("knxGatewayPort", "KNX_GATEWAY_PORT")
 
-    val timeZone = argEnvParser.requiredString("timeZone", "TIME_ZONE")
-    val locationLat = argEnvParser.requiredDouble("locationLat", "LOCATION_LAT")
-    val locationLon = argEnvParser.requiredDouble("locationLon", "LOCATION_LON")
-    val morningTime = argEnvParser.requiredString("morningTime", "MORNING_TIME")
-    val eveningTime = argEnvParser.requiredString("eveningTime", "EVENING_TIME")
+    val timeZoneConfig = argEnvParser.requiredString("timeZone", "TIME_ZONE")
+    val locationLatConfig = argEnvParser.requiredDouble("locationLat", "LOCATION_LAT")
+    val locationLonConfig = argEnvParser.requiredDouble("locationLon", "LOCATION_LON")
+    val morningTimeConfig = argEnvParser.requiredString("morningTime", "MORNING_TIME")
+    val eveningTimeConfig = argEnvParser.requiredString("eveningTime", "EVENING_TIME")
 
-    val allJalousieControlGroupAddress = argEnvParser.requiredString("allJalousieControlGroupAddress", "ALL_JALOUSIE_CONTROL_GROUP_ADDRESS")
-    val allJalousieExceptBedroomsControlGroupAddress = argEnvParser.requiredString("allJalousieExceptBedroomsControlGroupAddress", "ALL_JALOUSIE_EXCEPT_BEDROOMS_CONTROL_GROUP_ADDRESS")
-    val dayNightModeControlGroupAddress = argEnvParser.requiredString("dayNightModeControlGroupAddress", "DAY_NIGHT_MODE_CONTROL_GROUP_ADDRESS")
-    val heatingModeControlGroupAddress = argEnvParser.requiredString("heatingModeControlGroupAddress", "HEATING_MODE_CONTROL_GROUP_ADDRESS")
+    val allJalousieControlGroupAddressConfig = argEnvParser.requiredString("allJalousieControlGroupAddress", "ALL_JALOUSIE_CONTROL_GROUP_ADDRESS")
+    val allJalousieExceptBedroomsControlGroupAddressConfig = argEnvParser.requiredString("allJalousieExceptBedroomsControlGroupAddress", "ALL_JALOUSIE_EXCEPT_BEDROOMS_CONTROL_GROUP_ADDRESS")
+    val dayNightModeControlGroupAddressConfig = argEnvParser.requiredString("dayNightModeControlGroupAddress", "DAY_NIGHT_MODE_CONTROL_GROUP_ADDRESS")
+    val heatingModeControlGroupAddressConfig = argEnvParser.requiredString("heatingModeControlGroupAddress", "HEATING_MODE_CONTROL_GROUP_ADDRESS")
 
-    val offsetBeforeSunriseInSeconds = argEnvParser.optionalLong("offsetBeforeSunriseInSeconds", "OFFSET_BEFORE_SUNRISE_IN_SECONDS", 0)
-    val offsetAfterSunriseInSeconds = argEnvParser.optionalLong("offsetAfterSunriseInSeconds", "OFFSET_AFTER_SUNRISE_IN_SECONDS", 0)
-    val offsetBeforeSunsetInSeconds = argEnvParser.optionalLong("offsetBeforeSunsetInSeconds", "OFFSET_BEFORE_SUNSET_IN_SECONDS", 0)
-    val offsetAfterSunsetInSeconds = argEnvParser.optionalLong("offsetAfterSunsetInSeconds", "OFFSET_AFTER_SUNSET_IN_SECONDS", 0)
+    val sunriseEarliestConfig = argEnvParser.optionalString("sunriseEarliest", "SUNRISE_EARLIEST", null)
+    val sunriseLatestConfig = argEnvParser.optionalString("sunriseLatest", "SUNRISE_LATEST", null)
+    val sunsetEarliestConfig = argEnvParser.optionalString("sunsetEarliest", "SUNSET_EARLIEST", null)
+    val sunsetLatestConfig = argEnvParser.optionalString("sunsetLatest", "SUNSET_LATEST", null)
 
-    val offsetSunrise = offsetBeforeSunriseInSeconds.toLong() + offsetAfterSunriseInSeconds.toLong()
-    val offsetSunset = offsetBeforeSunsetInSeconds.toLong() + offsetAfterSunsetInSeconds.toLong()
+    val offsetBeforeSunriseInSecondsConfig = argEnvParser.optionalLong("offsetBeforeSunriseInSeconds", "OFFSET_BEFORE_SUNRISE_IN_SECONDS", 0)
+    val offsetAfterSunriseInSecondsConfig = argEnvParser.optionalLong("offsetAfterSunriseInSeconds", "OFFSET_AFTER_SUNRISE_IN_SECONDS", 0)
+    val offsetBeforeSunsetInSecondsConfig = argEnvParser.optionalLong("offsetBeforeSunsetInSeconds", "OFFSET_BEFORE_SUNSET_IN_SECONDS", 0)
+    val offsetAfterSunsetInSecondsConfig = argEnvParser.optionalLong("offsetAfterSunsetInSeconds", "OFFSET_AFTER_SUNSET_IN_SECONDS", 0)
 
     argEnvParser.parse()
 
+    val sunriseEarliest = sunriseEarliestConfig.toOptionalString()?.let { LocalTime.parse(it) }
+    val sunriseLatest = sunriseLatestConfig.toOptionalString()?.let { LocalTime.parse(it) }
+    val sunsetEarliest = sunsetEarliestConfig.toOptionalString()?.let { LocalTime.parse(it) }
+    val sunsetLatest = sunsetLatestConfig.toOptionalString()?.let { LocalTime.parse(it) }
+
+    val offsetSunrise = offsetBeforeSunriseInSecondsConfig.toLong() + offsetAfterSunriseInSecondsConfig.toLong()
+    val offsetSunset = offsetBeforeSunsetInSecondsConfig.toLong() + offsetAfterSunsetInSecondsConfig.toLong()
+
     val localAddress = InetSocketAddress(0)
-    val gatewayAddress = InetSocketAddress(knxGatewayAddress.toString(), knxGatewayPort.toInt())
+    val gatewayAddress = InetSocketAddress(knxGatewayAddressConfig.toString(), knxGatewayPortConfig.toInt())
 
     SynchronousEventBus().let { eventBus ->
         val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
             eventBus,
             Clock.systemDefaultZone(),
-            ZoneId.of(timeZone.toString()),
-            locationLat.toDouble(),
-            locationLon.toDouble(),
+            ZoneId.of(timeZoneConfig.toString()),
+            locationLatConfig.toDouble(),
+            locationLonConfig.toDouble(),
+            sunriseEarliest,
+            sunriseLatest,
+            sunsetEarliest,
+            sunsetLatest,
             offsetSunrise,
             offsetSunset
         )
@@ -67,12 +81,12 @@ fun main(args: Array<String>) {
         val morningEveningEventEmitter = MorningEveningEventEmitter(
             eventBus,
             Clock.systemDefaultZone(),
-            ZoneId.of(timeZone.toString()),
-            LocalTime.parse(morningTime.toString()),
-            LocalTime.parse(eveningTime.toString()),
+            ZoneId.of(timeZoneConfig.toString()),
+            LocalTime.parse(morningTimeConfig.toString()),
+            LocalTime.parse(eveningTimeConfig.toString()),
         )
 
-        if (!dryRun.toBoolean()) {
+        if (!dryRunConfig.toBoolean()) {
             KNXNetworkLinkIP.newTunnelingLink(
                 localAddress,
                 gatewayAddress,
@@ -82,20 +96,20 @@ fun main(args: Array<String>) {
                 ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
                     val dayNightModeController = KnxBasedDayNightModeController(
                         processCommunicator,
-                        GroupAddress.fromString(dayNightModeControlGroupAddress.toString())
+                        GroupAddress.fromString(dayNightModeControlGroupAddressConfig.toString())
                     )
 
                     val heatingModeController =
                         KnxBasedHeatingModeController(
                             processCommunicator,
-                            GroupAddress.fromString(heatingModeControlGroupAddress.toString())
+                            GroupAddress.fromString(heatingModeControlGroupAddressConfig.toString())
                         )
 
                     val jalousieController =
                         KnxBasedJalousieController(
                             processCommunicator,
-                            GroupAddress.fromString(allJalousieControlGroupAddress.toString()),
-                            GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddress.toString())
+                            GroupAddress.fromString(allJalousieControlGroupAddressConfig.toString()),
+                            GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddressConfig.toString())
                         )
 
                     configureEventBus(eventBus, dayNightModeController, heatingModeController, jalousieController)

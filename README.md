@@ -1,9 +1,9 @@
 # house-knx-automation
 
-This small kotlin app controls multiple features of our house via KNX. For now, it:
+This small kotlin app controls multiple features in our house via KNX. For now, it:
  - Moves the jalousie up and down on sunrise/sunset
  - Switches day-night-mode on sunrise/sunset
- - Switches between heating-modes in the  morning/evening
+ - Switches between heating-modes in the sunrise/sunset
 
 ## Build
 
@@ -34,7 +34,6 @@ java -jar build/libs/house_knx_automation-1.0-SNAPSHOT.jar
 You can control the app via environment variables or arguments.
 
 ### Required config
-
 | env var                                            | argument                                       | used for                                              |
 |----------------------------------------------------|------------------------------------------------|-------------------------------------------------------|
 | KNX_GATEWAY_ADDRESS                                | --knxGatewayAddress                            | Connection to KNX                                     |
@@ -50,10 +49,14 @@ You can control the app via environment variables or arguments.
 | HEATING_MODE_CONTROL_GROUP_ADDRESS                 | --heatingModeControlGroupAddress               | Switch heating comfort-night-mode automatically       |
 
 ### Optional config
-| env var                          | argument                       | default | used for                             |
-|----------------------------------|--------------------------------|---------|--------------------------------------|
-| DRY_RUN                          | --dryRun                       | false   | If set, no events will be emitted    |
-| OFFSET_BEFORE_SUNRISE_IN_SECONDS | --offsetBeforeSunriseInSeconds | 0       | Will be subtracted from sunrise time |
-| OFFSET_AFTER_SUNRISE_IN_SECONDS  | --offsetAfterSunriseInSeconds  | 0       | Will be added to sunrise time        |
-| OFFSET_BEFORE_SUNSET_IN_SECONDS  | --offsetBeforeSunsetInSeconds  | 0       | Will be subtracted from sunset time  |
-| OFFSET_AFTER_SUNSET_IN_SECONDS   | --offsetAfterSunsetInSeconds   | 0       | Will be subtracted from sunset time  |
+| env var                          | argument                       | used for                                             |
+|----------------------------------|--------------------------------|------------------------------------------------------|
+| DRY_RUN                          | --dryRun                       | If set, no events will be emitted                    |
+| OFFSET_BEFORE_SUNRISE_IN_SECONDS | --offsetBeforeSunriseInSeconds | Will be subtracted from sunrise time                 |
+| OFFSET_AFTER_SUNRISE_IN_SECONDS  | --offsetAfterSunriseInSeconds  | Will be added to sunrise time                        |
+| OFFSET_BEFORE_SUNSET_IN_SECONDS  | --offsetBeforeSunsetInSeconds  | Will be subtracted from sunset time                  |
+| OFFSET_AFTER_SUNSET_IN_SECONDS   | --offsetAfterSunsetInSeconds   | Will be subtracted from sunset time                  |
+| SUNRISE_EARLIEST                 | --sunriseEarliest              | Set earliest time, sunrise actions will be triggered |
+| SUNRISE_LATEST                   | --sunriseLatest                | Set latest time, sunrise actions will be triggered   |
+| SUNSET_EARLIEST                  | --sunsetEarliest               | Set earliest time, sunset action will be triggered   |
+| SUNSET_LATEST                    | --sunsetLatest                 | Set latest time, sunset action will be triggered     |
