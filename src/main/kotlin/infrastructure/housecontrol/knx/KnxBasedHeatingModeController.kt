@@ -2,7 +2,6 @@ package infrastructure.housecontrol.knx
 
 import infrastructure.housecontrol.CanControlHeatingMode
 import infrastructure.knx.GroupAddress
-import tuwien.auto.calimero.process.ProcessCommunicationBase
 import tuwien.auto.calimero.process.ProcessCommunicator
 
 class KnxBasedHeatingModeController(
@@ -20,7 +19,7 @@ class KnxBasedHeatingModeController(
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.COMFORT.value.toInt(),
-            ProcessCommunicationBase.UNSCALED
+            ProcessCommunicator.UNSCALED
         )
     }
 
@@ -28,7 +27,7 @@ class KnxBasedHeatingModeController(
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.STANDBY.value.toInt(),
-            ProcessCommunicationBase.UNSCALED
+            ProcessCommunicator.UNSCALED
         )
     }
 
@@ -36,7 +35,7 @@ class KnxBasedHeatingModeController(
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.NIGHT.value.toInt(),
-            ProcessCommunicationBase.UNSCALED
+            ProcessCommunicator.UNSCALED
         )
     }
 }
