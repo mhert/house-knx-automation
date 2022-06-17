@@ -2,6 +2,7 @@ import domain.*
 import domain.clock.*
 import infrastructure.ArgOrEnvParser
 import infrastructure.eventbus.EventBus
+import infrastructure.eventbus.logging.ObjectBasedListenerLoggingFacade
 import infrastructure.eventbus.SynchronousEventBus
 import infrastructure.housecontrol.CanControlDayNightMode
 import infrastructure.housecontrol.CanControlHeatingMode
@@ -12,7 +13,11 @@ import infrastructure.housecontrol.dryrun.DryRunBasedJalousieController
 import infrastructure.housecontrol.knx.KnxBasedDayNightModeController
 import infrastructure.housecontrol.knx.KnxBasedHeatingModeController
 import infrastructure.housecontrol.knx.KnxBasedJalousieController
+import infrastructure.housecontrol.logging.DayNightModeControllerLoggingFacade
+import infrastructure.housecontrol.logging.HeatingModeControllerLoggingFacade
+import infrastructure.housecontrol.logging.JalousieControllerLoggingFacade
 import infrastructure.knx.GroupAddress
+import org.slf4j.LoggerFactory
 import tuwien.auto.calimero.link.KNXNetworkLinkIP
 import tuwien.auto.calimero.link.medium.TPSettings
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl
@@ -86,6 +91,8 @@ fun main(args: Array<String>) {
             LocalTime.parse(eveningTimeConfig.toString()),
         )
 
+        val logger = LoggerFactory.getLogger("Controller")
+
         if (!dryRunConfig.toBoolean()) {
             KNXNetworkLinkIP.newTunnelingLink(
                 localAddress,
@@ -94,23 +101,27 @@ fun main(args: Array<String>) {
                 TPSettings.TP1
             ).use { knxLink ->
                 ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
-                    val dayNightModeController = KnxBasedDayNightModeController(
-                        processCommunicator,
-                        GroupAddress.fromString(dayNightModeControlGroupAddressConfig.toString())
+                    val dayNightModeController = DayNightModeControllerLoggingFacade(logger,
+                        KnxBasedDayNightModeController(
+                            processCommunicator,
+                            GroupAddress.fromString(dayNightModeControlGroupAddressConfig.toString())
+                        )
                     )
 
-                    val heatingModeController =
+                    val heatingModeController = HeatingModeControllerLoggingFacade(logger,
                         KnxBasedHeatingModeController(
-                            processCommunicator,
-                            GroupAddress.fromString(heatingModeControlGroupAddressConfig.toString())
+                                processCommunicator,
+                                GroupAddress.fromString(heatingModeControlGroupAddressConfig.toString())
                         )
+                    )
 
-                    val jalousieController =
+                    val jalousieController = JalousieControllerLoggingFacade(logger,
                         KnxBasedJalousieController(
                             processCommunicator,
                             GroupAddress.fromString(allJalousieControlGroupAddressConfig.toString()),
                             GroupAddress.fromString(allJalousieExceptBedroomsControlGroupAddressConfig.toString())
                         )
+                    )
 
                     configureEventBus(eventBus, dayNightModeController, heatingModeController, jalousieController)
 
@@ -119,9 +130,9 @@ fun main(args: Array<String>) {
             }
         }
         else {
-            val dayNightModeController = DryRunBasedDayNightModeController()
-            val heatingModeController = DryRunBasedHeatingModeController()
-            val jalousieController = DryRunBasedJalousieController()
+            val dayNightModeController = DayNightModeControllerLoggingFacade(logger, DryRunBasedDayNightModeController())
+            val heatingModeController = HeatingModeControllerLoggingFacade(logger, DryRunBasedHeatingModeController())
+            val jalousieController = JalousieControllerLoggingFacade(logger, DryRunBasedJalousieController())
 
             configureEventBus(eventBus, dayNightModeController, heatingModeController, jalousieController)
 
@@ -136,13 +147,17 @@ fun configureEventBus(
     heatingModeController: CanControlHeatingMode,
     jalousieController: CanControlJalousie,
 ) {
-    eventBus.listen(SunriseEvent::class, OnSunriseTurnDayModeOn(dayNightModeController))
-    eventBus.listen(SunriseEvent::class, OnSunriseMoveJalousieUp(jalousieController))
-    eventBus.listen(SunsetEvent::class, OnSunsetTurnNightModeOn(dayNightModeController))
-    eventBus.listen(SunsetEvent::class, OnSunsetMoveJalousieDown(jalousieController))
-    eventBus.listen(ReachedMorningEvent::class, InTheMorningTurnOnHeatingComfortMode(heatingModeController))
-    eventBus.listen(ReachedEveningEvent::class, InTheEveningTurnOnHeatingNightMode(heatingModeController))
+    val logger = LoggerFactory.getLogger("EventBus")
+
+    eventBus.listen(SunriseEvent::class, ObjectBasedListenerLoggingFacade(logger, OnSunriseTurnDayModeOn(dayNightModeController)))
+    eventBus.listen(SunriseEvent::class, ObjectBasedListenerLoggingFacade(logger, OnSunriseMoveJalousieUp(jalousieController)))
+    eventBus.listen(SunsetEvent::class, ObjectBasedListenerLoggingFacade(logger, OnSunsetTurnNightModeOn(dayNightModeController)))
+    eventBus.listen(SunsetEvent::class, ObjectBasedListenerLoggingFacade(logger, OnSunsetMoveJalousieDown(jalousieController)))
+    eventBus.listen(SunsetEvent::class, ObjectBasedListenerLoggingFacade(logger, OnSunsetMoveJalousieDown(jalousieController)))
+    eventBus.listen(ReachedMorningEvent::class, ObjectBasedListenerLoggingFacade(logger, InTheMorningTurnOnHeatingComfortMode(heatingModeController)))
+    eventBus.listen(ReachedEveningEvent::class, ObjectBasedListenerLoggingFacade(logger, InTheEveningTurnOnHeatingNightMode(heatingModeController)))
 }
+
 fun eventBusTick(
     sunriseSunsetEventEmitter: SunriseSunsetEventEmitter,
     morningEveningEventEmitter: MorningEveningEventEmitter,

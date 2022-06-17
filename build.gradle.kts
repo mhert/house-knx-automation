@@ -25,6 +25,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
     implementation("com.github.calimero:calimero-core:2.5")
     implementation("com.github.calimero:calimero-device:2.5")
     implementation("com.github.calimero:calimero-rxtx:2.5")

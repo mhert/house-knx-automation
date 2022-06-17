@@ -6,10 +6,8 @@ class DryRunBasedDayNightModeController(
 ): CanControlDayNightMode {
 
     override fun switchToDayMode() {
-        println("DayNightMode:switchToDayMode")
     }
 
     override fun switchToNightMode() {
-        println("DayNightMode:switchToNightMode")
     }
 }
