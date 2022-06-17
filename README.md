@@ -21,7 +21,7 @@ docker buildx build --no-cache --progress plain --tag `basename $PWD` --file Doc
 
 ### Docker
 ```shell
-docker run ghcr.io/mhert/house-knx-automation:latest
+docker run mhert/house-knx-automation:latest
 ```
 
 ### Executable jar
