@@ -31,32 +31,32 @@ java -jar build/libs/house_knx_automation-1.0-SNAPSHOT.jar
 
 ## Configuration
 
-You can control the app via environment variables or arguments.
+You can configure it via env vars.
 
 ### Required config
-| env var                                            | argument                                       | used for                                              |
-|----------------------------------------------------|------------------------------------------------|-------------------------------------------------------|
-| KNX_GATEWAY_ADDRESS                                | --knxGatewayAddress                            | Connection to KNX                                     |
-| KNX_GATEWAY_PORT                                   | --knxGatewayPort                               | Connection to KNX                                     |
-| TIME_ZONE                                          | --timeZone                                     | Calculation of sunset/sunrise time / Set heating mode |
-| LOCATION_LAT                                       | --locationLat                                  | Calculation of sunset/sunrise time                    |
-| LOCATION_LON                                       | --locationLon                                  | Calculation of sunset/sunrise time                    |
-| MORNING_TIME                                       | --morningTime                                  | Set heating mode                                      |
-| EVENING_TIME                                       | --eveningTime                                  | Set heating mode                                      |
-| ALL_JALOUSIE_CONTROL_GROUP_ADDRESS                 | --allJalousieControlGroupAddress               | Move up/down jalousie automatically                   |
-| ALL_JALOUSIE_EXCEPT_BEDROOMS_CONTROL_GROUP_ADDRESS | --allJalousieExceptBedroomsControlGroupAddress | Move up/down jalousie automatically                   |
-| DAY_NIGHT_MODE_CONTROL_GROUP_ADDRESS               | --dayNightModeControlGroupAddress              | Switch day-night-mode automatically                   |
-| HEATING_MODE_CONTROL_GROUP_ADDRESS                 | --heatingModeControlGroupAddress               | Switch heating comfort-night-mode automatically       |
+| env var                                            | used for                                              |
+|----------------------------------------------------|-------------------------------------------------------|
+| KNX_GATEWAY_ADDRESS                                | Connection to KNX                                     |
+| KNX_GATEWAY_PORT                                   | Connection to KNX                                     |
+| TIME_ZONE                                          | Calculation of sunset/sunrise time / Set heating mode |
+| LOCATION_LAT                                       | Calculation of sunset/sunrise time                    |
+| LOCATION_LON                                       | Calculation of sunset/sunrise time                    |
+| MORNING_TIME                                       | Set heating mode                                      |
+| EVENING_TIME                                       | Set heating mode                                      |
+| ALL_JALOUSIE_CONTROL_GROUP_ADDRESS                 | Move up/down jalousie automatically                   |
+| ALL_JALOUSIE_EXCEPT_BEDROOMS_CONTROL_GROUP_ADDRESS | Move up/down jalousie automatically                   |
+| DAY_NIGHT_MODE_CONTROL_GROUP_ADDRESS               | Switch day-night-mode automatically                   |
+| HEATING_MODE_CONTROL_GROUP_ADDRESS                 | Switch heating comfort-night-mode automatically       |
 
 ### Optional config
-| env var                          | argument                       | used for                                             |
-|----------------------------------|--------------------------------|------------------------------------------------------|
-| DRY_RUN                          | --dryRun                       | If set, no events will be emitted                    |
-| OFFSET_BEFORE_SUNRISE_IN_SECONDS | --offsetBeforeSunriseInSeconds | Will be subtracted from sunrise time                 |
-| OFFSET_AFTER_SUNRISE_IN_SECONDS  | --offsetAfterSunriseInSeconds  | Will be added to sunrise time                        |
-| OFFSET_BEFORE_SUNSET_IN_SECONDS  | --offsetBeforeSunsetInSeconds  | Will be subtracted from sunset time                  |
-| OFFSET_AFTER_SUNSET_IN_SECONDS   | --offsetAfterSunsetInSeconds   | Will be subtracted from sunset time                  |
-| SUNRISE_EARLIEST                 | --sunriseEarliest              | Set earliest time, sunrise actions will be triggered |
-| SUNRISE_LATEST                   | --sunriseLatest                | Set latest time, sunrise actions will be triggered   |
-| SUNSET_EARLIEST                  | --sunsetEarliest               | Set earliest time, sunset action will be triggered   |
-| SUNSET_LATEST                    | --sunsetLatest                 | Set latest time, sunset action will be triggered     |
+| env var                          | used for                                             |
+|----------------------------------|------------------------------------------------------|
+| DRY_RUN                          | If set, no events will be emitted                    |
+| OFFSET_BEFORE_SUNRISE_IN_SECONDS | Will be subtracted from sunrise time                 |
+| OFFSET_AFTER_SUNRISE_IN_SECONDS  | Will be added to sunrise time                        |
+| OFFSET_BEFORE_SUNSET_IN_SECONDS  | Will be subtracted from sunset time                  |
+| OFFSET_AFTER_SUNSET_IN_SECONDS   | Will be subtracted from sunset time                  |
+| SUNRISE_EARLIEST                 | Set earliest time, sunrise actions will be triggered |
+| SUNRISE_LATEST                   | Set latest time, sunrise actions will be triggered   |
+| SUNSET_EARLIEST                  | Set earliest time, sunset action will be triggered   |
+| SUNSET_LATEST                    | Set latest time, sunset action will be triggered     |
