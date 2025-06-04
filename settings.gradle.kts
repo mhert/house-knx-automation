@@ -1,2 +1,2 @@
-rootProject.name = "house_knx_automation"
+rootProject.name = "house-knx-automation"
 
