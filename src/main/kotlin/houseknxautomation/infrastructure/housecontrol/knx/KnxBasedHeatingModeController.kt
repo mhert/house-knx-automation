@@ -2,7 +2,7 @@ package houseknxautomation.infrastructure.housecontrol.knx
 
 import houseknxautomation.infrastructure.housecontrol.CanControlHeatingMode
 import houseknxautomation.infrastructure.knx.GroupAddress
-import tuwien.auto.calimero.process.ProcessCommunicator
+import io.calimero.process.ProcessCommunicator
 
 class KnxBasedHeatingModeController(
     private val processCommunicator: ProcessCommunicator,
@@ -17,7 +17,7 @@ class KnxBasedHeatingModeController(
 
     override fun switchToComfortMode() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.COMFORT.value.toInt(),
             ProcessCommunicator.UNSCALED,
         )
@@ -25,7 +25,7 @@ class KnxBasedHeatingModeController(
 
     override fun switchToStandbyMode() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.STANDBY.value.toInt(),
             ProcessCommunicator.UNSCALED,
         )
@@ -33,7 +33,7 @@ class KnxBasedHeatingModeController(
 
     override fun switchToNightMode() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.NIGHT.value.toInt(),
             ProcessCommunicator.UNSCALED,
         )

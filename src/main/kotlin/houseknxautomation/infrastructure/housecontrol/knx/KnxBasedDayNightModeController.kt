@@ -2,7 +2,7 @@ package houseknxautomation.infrastructure.housecontrol.knx
 
 import houseknxautomation.infrastructure.housecontrol.CanControlDayNightMode
 import houseknxautomation.infrastructure.knx.GroupAddress
-import tuwien.auto.calimero.process.ProcessCommunicator
+import io.calimero.process.ProcessCommunicator
 
 class KnxBasedDayNightModeController(
     private val processCommunicator: ProcessCommunicator,
@@ -15,14 +15,14 @@ class KnxBasedDayNightModeController(
 
     override fun switchToDayMode() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             DayNight.DAY.value,
         )
     }
 
     override fun switchToNightMode() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             DayNight.NIGHT.value,
         )
     }

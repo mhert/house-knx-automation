@@ -2,7 +2,7 @@ package houseknxautomation.infrastructure.housecontrol.knx
 
 import houseknxautomation.infrastructure.housecontrol.CanControlJalousie
 import houseknxautomation.infrastructure.knx.GroupAddress
-import tuwien.auto.calimero.process.ProcessCommunicator
+import io.calimero.process.ProcessCommunicator
 
 class KnxBasedJalousieController(
     private val processCommunicator: ProcessCommunicator,
@@ -16,28 +16,28 @@ class KnxBasedJalousieController(
 
     override fun allJalousieUp() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(allJalousieControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(allJalousieControlGroupAddress.toInt()),
             JalousieControl.UP.value,
         )
     }
 
     override fun allJalousieDown() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(allJalousieControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(allJalousieControlGroupAddress.toInt()),
             JalousieControl.DOWN.value,
         )
     }
 
     override fun allJalousieExceptBedroomsUp() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(allJalousieExceptBedroomsControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(allJalousieExceptBedroomsControlGroupAddress.toInt()),
             JalousieControl.UP.value,
         )
     }
 
     override fun allJalousieExceptBedroomsDown() {
         processCommunicator.write(
-            tuwien.auto.calimero.GroupAddress(allJalousieExceptBedroomsControlGroupAddress.toInt()),
+            io.calimero.GroupAddress(allJalousieExceptBedroomsControlGroupAddress.toInt()),
             JalousieControl.DOWN.value,
         )
     }

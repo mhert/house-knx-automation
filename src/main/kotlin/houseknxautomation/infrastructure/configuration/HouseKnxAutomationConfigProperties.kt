@@ -1,7 +1,6 @@
 package houseknxautomation.infrastructure.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @ConfigurationProperties(prefix = "house-knx-automation")
 class HouseKnxAutomationConfigProperties(

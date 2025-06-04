@@ -29,28 +29,26 @@ import houseknxautomation.infrastructure.housecontrol.logging.DayNightModeContro
 import houseknxautomation.infrastructure.housecontrol.logging.HeatingModeControllerLoggingFacade
 import houseknxautomation.infrastructure.housecontrol.logging.JalousieControllerLoggingFacade
 import houseknxautomation.infrastructure.knx.GroupAddress
+import io.calimero.link.KNXNetworkLinkIP
+import io.calimero.link.medium.TPSettings
+import io.calimero.process.ProcessCommunicatorImpl
 import java.net.InetSocketAddress
 import java.time.Clock
 import java.time.LocalTime
 import java.time.ZoneId
 import kotlin.use
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
-import tuwien.auto.calimero.link.KNXNetworkLinkIP
-import tuwien.auto.calimero.link.medium.TPSettings
-import tuwien.auto.calimero.process.ProcessCommunicatorImpl
 
 @EnableConfigurationProperties
 @SpringBootApplication
 @ConfigurationPropertiesScan
-class HouseKnxAutomationApplication(
-    private var config: HouseKnxAutomationConfigProperties
-) : CommandLineRunner {
+class HouseKnxAutomationApplication(private var config: HouseKnxAutomationConfigProperties) :
+    CommandLineRunner {
 
     override fun run(vararg args: String?) {
         SynchronousEventBus().let { eventBus ->
@@ -87,7 +85,7 @@ class HouseKnxAutomationApplication(
                         InetSocketAddress(0),
                         InetSocketAddress(config.knxGatewayAddress, config.knxGatewayPort.toInt()),
                         true,
-                        TPSettings.TP1,
+                        TPSettings(),
                     )
                     .use { knxLink ->
                         ProcessCommunicatorImpl(knxLink).use { processCommunicator ->
