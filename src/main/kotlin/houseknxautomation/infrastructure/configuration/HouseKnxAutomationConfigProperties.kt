@@ -4,7 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "house-knx-automation")
 class HouseKnxAutomationConfigProperties(
-    var dryRun: String,
+    var printEvents: String,
+    var printControls: String,
     var knxGatewayAddress: String,
     var knxGatewayPort: String,
     var timeZone: String,

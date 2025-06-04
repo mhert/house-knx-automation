@@ -1,5 +1,6 @@
 package houseknxautomation.infrastructure.knx
 
+import houseknxautomation.knx.GroupAddress
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

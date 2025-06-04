@@ -1,0 +1,3 @@
+package houseknxautomation.clock
+
+class ReachedMorningEvent

@@ -3,7 +3,8 @@ spring:
   application:
     name: "house-knx-automation"
 house-knx-automation:
-  dryRun: "${DRY_RUN}"
+  printEvents: "${PRINT_EVENTS}"
+  printControls: "${PRINT_CONTROLS}"
   knxGatewayAddress: "${KNX_GATEWAY_ADDRESS}"
   knxGatewayPort: "${KNX_GATEWAY_PORT}"
   timeZone: "${TIME_ZONE}"
