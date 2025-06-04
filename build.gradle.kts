@@ -1,15 +1,16 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.21"
-    kotlin("plugin.serialization") version "1.6.21"
-    application
+    id("application")
+    kotlin("jvm") version "2.2.0-RC"
+    kotlin("plugin.serialization") version "2.2.0-RC"
 }
 
 sourceSets {
     main {
         dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3")
+            implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6")
         }
     }
 }
@@ -38,28 +39,15 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = JavaVersion.VERSION_15.toString()
-}
-
-val jar by tasks.getting(Jar::class) {
-    manifest {
-        attributes["Main-Class"] = "MainKt"
-    }
-
-    from(sourceSets.main.get().output)
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
-}
-
 application {
     mainClass = "MainKt"
 }
 
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        freeCompilerArgs = freeCompilerArgs.get() + listOf("-Xjsr305=strict")
+        jvmTarget = JvmTarget.JVM_24
+    }
+}
+
+tasks.withType<Test> { useJUnitPlatform() }

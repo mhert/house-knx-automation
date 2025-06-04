@@ -1,7 +1,7 @@
-FROM openjdk:15-slim-buster as builder-cache
+FROM amazoncorretto:24.0.1-alpine3.21 as builder-cache
 RUN mkdir /gradle-user-home
-RUN mkdir /app
-WORKDIR /app
+RUN mkdir /house-knx-automation
+WORKDIR /house-knx-automation
 ENV GRADLE_USER_HOME /gradle-user-home
 COPY gradlew ./
 COPY gradle ./gradle
@@ -12,11 +12,11 @@ RUN uname -m
 # working with arm64. So we're using vfork
 RUN ./gradlew -Djdk.lang.Process.launchMechanism=vfork clean build -i --stacktrace --no-daemon
 
-FROM openjdk:15-slim-buster as builder
+FROM amazoncorretto:24.0.1-alpine3.21 as builder
 RUN mkdir /gradle-user-home
 COPY --from=builder-cache /gradle-user-home/caches /gradle-user-home/caches
-RUN mkdir /app
-WORKDIR /app
+RUN mkdir /house-knx-automation
+WORKDIR /house-knx-automation
 ENV GRADLE_USER_HOME /gradle-user-home
 COPY gradlew ./
 COPY gradle ./gradle
@@ -27,7 +27,7 @@ COPY src ./src
 # working with arm64. So we're using vfork
 RUN ./gradlew -Djdk.lang.Process.launchMechanism=vfork clean build -i --stacktrace --no-daemon
 
-FROM openjdk:15-slim-buster
+FROM amazoncorretto:24.0.1-alpine3.21
 LABEL org.opencontainers.image.source=https://github.com/mhert/house-knx-automation
-COPY --from=builder /app/build/libs/app-1.0-SNAPSHOT.jar /app.jar
-CMD [ "java", "-jar", "/app.jar"]
+COPY --from=builder /house-knx-automation/build/libs/house-knx-automation-1.0-SNAPSHOT.jar /house-knx-automation.jar
+CMD [ "java", "-jar", "/house-knx-automation.jar"]
