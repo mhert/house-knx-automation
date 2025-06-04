@@ -4,22 +4,23 @@ import houseknxautomation.domain.clock.SunsetEvent
 import houseknxautomation.infrastructure.eventbus.ObjectBasedListener
 import houseknxautomation.infrastructure.housecontrol.CanControlJalousie
 
-class OnSunsetMoveJalousieDown(
-    private val jalousieController: CanControlJalousie
-) : ObjectBasedListener<SunsetEvent> {
+class OnSunsetMoveJalousieDown(private val jalousieController: CanControlJalousie) :
+    ObjectBasedListener<SunsetEvent> {
 
     override fun invoke(event: SunsetEvent) {
         jalousieController.allJalousieDown()
 
-        // Wait some time and send the command again. Sometimes the command does not reach all devices
+        // Wait some time and send the command again. Sometimes the command does not reach all
+        // devices
         object : Thread() {
-            override fun run() {
-                super.run()
+                override fun run() {
+                    super.run()
 
-                sleep(60 * 1000)
+                    sleep(60 * 1000)
 
-                jalousieController.allJalousieDown()
+                    jalousieController.allJalousieDown()
+                }
             }
-        }.start()
+            .start()
     }
 }

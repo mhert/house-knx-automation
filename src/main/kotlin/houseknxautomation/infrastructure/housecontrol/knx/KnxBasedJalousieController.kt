@@ -7,8 +7,8 @@ import tuwien.auto.calimero.process.ProcessCommunicator
 class KnxBasedJalousieController(
     private val processCommunicator: ProcessCommunicator,
     private val allJalousieControlGroupAddress: GroupAddress,
-    private val allJalousieExceptBedroomsControlGroupAddress: GroupAddress
-): CanControlJalousie {
+    private val allJalousieExceptBedroomsControlGroupAddress: GroupAddress,
+) : CanControlJalousie {
     private enum class JalousieControl(val value: Boolean) {
         UP(false),
         DOWN(true),
@@ -17,28 +17,28 @@ class KnxBasedJalousieController(
     override fun allJalousieUp() {
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(allJalousieControlGroupAddress.toInt()),
-            JalousieControl.UP.value
+            JalousieControl.UP.value,
         )
     }
 
     override fun allJalousieDown() {
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(allJalousieControlGroupAddress.toInt()),
-            JalousieControl.DOWN.value
+            JalousieControl.DOWN.value,
         )
     }
 
     override fun allJalousieExceptBedroomsUp() {
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(allJalousieExceptBedroomsControlGroupAddress.toInt()),
-            JalousieControl.UP.value
+            JalousieControl.UP.value,
         )
     }
 
     override fun allJalousieExceptBedroomsDown() {
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(allJalousieExceptBedroomsControlGroupAddress.toInt()),
-            JalousieControl.DOWN.value
+            JalousieControl.DOWN.value,
         )
     }
 }

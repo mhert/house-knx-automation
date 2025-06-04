@@ -5,9 +5,8 @@ import org.slf4j.Logger
 
 class JalousieControllerLoggingFacade(
     private val logger: Logger,
-    private val jalousieController: CanControlJalousie
-
-    ): CanControlJalousie {
+    private val jalousieController: CanControlJalousie,
+) : CanControlJalousie {
     override fun allJalousieUp() {
         logger.info("" + jalousieController::class.simpleName + " allJalousieUp")
 

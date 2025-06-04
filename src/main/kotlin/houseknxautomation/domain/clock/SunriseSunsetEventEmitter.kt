@@ -31,13 +31,20 @@ class SunriseSunsetEventEmitter(
         val nowWithDate = LocalDateTime.from(clock.instant().atZone(timeZone))
         val now = nowWithDate.toLocalTime()
 
-        val sunriseTimeForToday = calculateSunrise(locationLat, locationLon, nowWithDate.atZone(timeZone)).plusSeconds(offsetSunrise)
-        val sunsetTimeForToday = calculateSunset(locationLat, locationLon, nowWithDate.atZone(timeZone)).plusSeconds(offsetSunset)
+        val sunriseTimeForToday =
+            calculateSunrise(locationLat, locationLon, nowWithDate.atZone(timeZone))
+                .plusSeconds(offsetSunrise)
+        val sunsetTimeForToday =
+            calculateSunset(locationLat, locationLon, nowWithDate.atZone(timeZone))
+                .plusSeconds(offsetSunset)
 
-        val nowIsBeforeEarliestSunriseTime = sunriseTimeEarliest?.let { now.isBefore(sunriseTimeEarliest) } ?: false
-        val nowIsAfterLatestSunriseTime = sunriseTimeLatest?.let { now.isAfter(sunriseTimeLatest) } ?: false
+        val nowIsBeforeEarliestSunriseTime =
+            sunriseTimeEarliest?.let { now.isBefore(sunriseTimeEarliest) } ?: false
+        val nowIsAfterLatestSunriseTime =
+            sunriseTimeLatest?.let { now.isAfter(sunriseTimeLatest) } ?: false
 
-        val nowIsBeforeEarliestSunsetTime = sunsetEarliest?.let { now.isBefore(sunsetEarliest) } ?: false
+        val nowIsBeforeEarliestSunsetTime =
+            sunsetEarliest?.let { now.isBefore(sunsetEarliest) } ?: false
         val nowIsAfterLatestSunsetTime = sunsetLatest?.let { now.isAfter(sunsetLatest) } ?: false
         val nowIsBeforeLatestSunsetTime = sunsetLatest?.let { now.isBefore(sunsetLatest) } ?: true
 
@@ -63,11 +70,10 @@ class SunriseSunsetEventEmitter(
                     return
                 }
             }
-
         }
 
         if (state !== State.NIGHT) {
-            if (nowIsBeforeSunriseTime ) {
+            if (nowIsBeforeSunriseTime) {
                 eventBus.dispatch(SunsetEvent())
                 state = State.NIGHT
 
@@ -94,34 +100,28 @@ class SunriseSunsetEventEmitter(
     private fun calculateSunrise(
         locationLat: Double,
         locationLon: Double,
-        now: ZonedDateTime
+        now: ZonedDateTime,
     ): LocalTime {
-        val calculator = SunriseSunsetCalculator(
-            Location(locationLat, locationLon),
-            TimeZone.getTimeZone(now.zone)
-        )
-        val sunrise = calculator.getOfficialSunriseCalendarForDate(
-            GregorianCalendar.from(
-                now
+        val calculator =
+            SunriseSunsetCalculator(
+                Location(locationLat, locationLon),
+                TimeZone.getTimeZone(now.zone),
             )
-        )
+        val sunrise = calculator.getOfficialSunriseCalendarForDate(GregorianCalendar.from(now))
         return LocalDateTime.ofInstant(sunrise.toInstant(), now.zone).toLocalTime()
     }
 
     private fun calculateSunset(
         locationLat: Double,
         locationLon: Double,
-        now: ZonedDateTime
+        now: ZonedDateTime,
     ): LocalTime {
-        val calculator = SunriseSunsetCalculator(
-            Location(locationLat, locationLon),
-            TimeZone.getTimeZone(now.zone)
-        )
-        val sunrise = calculator.getOfficialSunsetCalendarForDate(
-            GregorianCalendar.from(
-                now
+        val calculator =
+            SunriseSunsetCalculator(
+                Location(locationLat, locationLon),
+                TimeZone.getTimeZone(now.zone),
             )
-        )
+        val sunrise = calculator.getOfficialSunsetCalendarForDate(GregorianCalendar.from(now))
         return LocalDateTime.ofInstant(sunrise.toInstant(), now.zone).toLocalTime()
     }
 }

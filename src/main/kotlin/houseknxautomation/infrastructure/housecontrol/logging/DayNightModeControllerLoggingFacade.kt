@@ -5,9 +5,8 @@ import org.slf4j.Logger
 
 class DayNightModeControllerLoggingFacade(
     private val logger: Logger,
-    private val dayNightModeController: CanControlDayNightMode
-
-    ): CanControlDayNightMode {
+    private val dayNightModeController: CanControlDayNightMode,
+) : CanControlDayNightMode {
     override fun switchToDayMode() {
         logger.info("" + dayNightModeController::class.simpleName + " switchToDayMode")
 

@@ -5,17 +5,13 @@ plugins {
     id("application")
     kotlin("jvm") version "2.2.0-RC"
     kotlin("plugin.serialization") version "2.2.0-RC"
+    id("com.diffplug.spotless") version "7.0.4"
 }
 
-sourceSets {
-    main {
-        dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6")
-        }
-    }
-}
+sourceSets { main { dependencies { implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6") } } }
 
 group = "me.mhert"
+
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -39,8 +35,26 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }
 
-application {
-    mainClass = "MainKt"
+application { mainClass = "MainKt" }
+
+spotless {
+    kotlin {
+        target("**/*.kt", "**/*.kts")
+        ktfmt().kotlinlangStyle()
+    }
+
+    yaml {
+        target("**/*.yaml", "**/*.yml")
+        jackson()
+    }
+
+    format("misc") {
+        target("**/*.gitignore", "**/*.properties", "**/*.md", "LICENSE")
+
+        trimTrailingWhitespace()
+        indentWithSpaces(4)
+        endWithNewline()
+    }
 }
 
 tasks.withType<KotlinCompile> {

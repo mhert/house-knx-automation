@@ -1,13 +1,13 @@
 package houseknxautomation.domain.clock
 
 import houseknxautomation.infrastructure.eventbus.EventBus
-import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
 import java.time.Clock
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.*
 
 class SunriseSunsetEventEmitterTest {
     @Test
@@ -22,37 +22,35 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T07:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T07:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
         verify(eventBus, times(1)).dispatch(refEq(SunriseEvent()))
         verify(eventBus, times(0)).dispatch(refEq(SunsetEvent()))
     }
+
     @Test
     fun `test sunsetEvent will be emitted on before sunrise`() {
         val timeZone = ZoneId.of("Europe/Berlin")
@@ -65,31 +63,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T04:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T04:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -109,31 +104,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T22:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T22:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -153,31 +145,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T07:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T07:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -197,31 +186,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T09:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T09:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -241,31 +227,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T05:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T05:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -285,31 +268,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T22:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T22:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -329,31 +309,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T23:30:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T23:30:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -373,31 +350,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T20:15:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T20:15:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -417,31 +391,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T06:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T06:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -461,31 +432,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T07:30:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T07:30:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -505,31 +473,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T16:00:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T16:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 
@@ -549,31 +514,28 @@ class SunriseSunsetEventEmitterTest {
         val offsetSunrise = 0
         val offsetSunset = 0
 
-        val now = LocalDateTime.parse(
-            "2022-06-01T21:30:00",
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        )
-            .atZone(timeZone)
-            .toInstant()
+        val now =
+            LocalDateTime.parse("2022-06-01T21:30:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .atZone(timeZone)
+                .toInstant()
 
         val eventBus = mock<EventBus>()
-        val clock = mock<Clock> {
-            on { instant() } doReturn (now)
-        }
+        val clock = mock<Clock> { on { instant() } doReturn (now) }
 
-        val sunriseSunsetEventEmitter = SunriseSunsetEventEmitter(
-            eventBus,
-            clock,
-            timeZone,
-            locationLat,
-            locationLon,
-            sunriseTimeEarliest,
-            sunriseTimeLatest,
-            sunsetEarliest,
-            sunsetLatest,
-            offsetSunrise.toLong(),
-            offsetSunset.toLong()
-        )
+        val sunriseSunsetEventEmitter =
+            SunriseSunsetEventEmitter(
+                eventBus,
+                clock,
+                timeZone,
+                locationLat,
+                locationLon,
+                sunriseTimeEarliest,
+                sunriseTimeLatest,
+                sunsetEarliest,
+                sunsetLatest,
+                offsetSunrise.toLong(),
+                offsetSunset.toLong(),
+            )
 
         sunriseSunsetEventEmitter.tick()
 

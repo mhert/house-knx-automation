@@ -5,9 +5,8 @@ import org.slf4j.Logger
 
 class HeatingModeControllerLoggingFacade(
     private val logger: Logger,
-    private val heatingModeController: CanControlHeatingMode
-
-    ): CanControlHeatingMode {
+    private val heatingModeController: CanControlHeatingMode,
+) : CanControlHeatingMode {
     override fun switchToComfortMode() {
         logger.info("" + heatingModeController::class.simpleName + " switchToComfortMode")
 

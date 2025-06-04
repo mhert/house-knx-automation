@@ -6,8 +6,8 @@ import tuwien.auto.calimero.process.ProcessCommunicator
 
 class KnxBasedHeatingModeController(
     private val processCommunicator: ProcessCommunicator,
-    private val dayNightModeControlGroupAddress: GroupAddress
-): CanControlHeatingMode {
+    private val dayNightModeControlGroupAddress: GroupAddress,
+) : CanControlHeatingMode {
     private enum class HvacMode(val value: Byte) {
         COMFORT(0x01),
         STANDBY(0x02),
@@ -19,7 +19,7 @@ class KnxBasedHeatingModeController(
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.COMFORT.value.toInt(),
-            ProcessCommunicator.UNSCALED
+            ProcessCommunicator.UNSCALED,
         )
     }
 
@@ -27,7 +27,7 @@ class KnxBasedHeatingModeController(
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.STANDBY.value.toInt(),
-            ProcessCommunicator.UNSCALED
+            ProcessCommunicator.UNSCALED,
         )
     }
 
@@ -35,7 +35,7 @@ class KnxBasedHeatingModeController(
         processCommunicator.write(
             tuwien.auto.calimero.GroupAddress(dayNightModeControlGroupAddress.toInt()),
             HvacMode.NIGHT.value.toInt(),
-            ProcessCommunicator.UNSCALED
+            ProcessCommunicator.UNSCALED,
         )
     }
 }

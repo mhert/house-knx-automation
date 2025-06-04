@@ -9,7 +9,7 @@ interface ObjectBasedListener<T : Event> {
 }
 
 interface EventBus {
-    fun dispatch(event: Event);
+    fun dispatch(event: Event)
 
     fun <T> listen(type: KClass<T>, listener: LambdaBasedListener<T>) where T : Event
 
