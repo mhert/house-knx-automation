@@ -60,6 +60,6 @@ val jar by tasks.getting(Jar::class) {
 }
 
 application {
-    mainClassName = "MainKt"
+    mainClass = "MainKt"
 }
 
